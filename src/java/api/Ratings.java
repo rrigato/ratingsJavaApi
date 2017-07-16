@@ -5,6 +5,10 @@
  */
 package api;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -31,6 +35,21 @@ public class Ratings {
      */
     public Ratings() {
     }
+    
+    /*
+        Gets a connection to the amazon web services for dynamoDb
+        Using configuration parameters set in the context.xml
+    */
+    private AmazonS3 getConnection (String id, String key){
+        
+        //Loads access keys from environment variables
+        BasicAWSCredentials awsCreds = new BasicAWSCredentials(id, key);
+        AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
+                        .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
+                        .build();
+        
+        return(s3Client);
+    }
 
     /**
      * Retrieves representation of an instance of api.Ratings
@@ -40,7 +59,9 @@ public class Ratings {
     @Produces(MediaType.APPLICATION_JSON)
     public String getJson(@Context ServletContext context) {
         
-        System.out.println(context.getInitParameter("hello"));
+        //AmazonS3 s3Client = getConnection(context.getInitParameter("id").toString(), context.getInitParameter("key").toString());
+        System.out.println(context.getInitParameter("key").toString());
+        //System.out.println(s3Client);
         //TODO return proper representation object
         return("{\"Hello\":\"world\"}");
     }
